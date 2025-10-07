@@ -85,6 +85,7 @@
                 </source>
                 <source>
                   <location>${project.basedir}/rpm/sudo-wrapper.sh</location>
+                  <location>${project.basedir}/rpm/inject_config.py</location>
                 </source>
               </sources>
             </mapping>
@@ -252,6 +253,11 @@ fi;
 exit 0;
             </script>
           </preinstallScriptlet>
+          <postinstallScriptlet>
+            <script>
+python3 /opt/teragrep/${project.artifactId}/bin/inject_config.py
+            </script>
+          </postinstallScriptlet>
         </configuration>
       </plugin>
       <plugin>

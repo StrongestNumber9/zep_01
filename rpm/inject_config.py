@@ -65,6 +65,12 @@ except Exception as e:
     print(f"Can't read {interpreter_settings_file}: {e}")
     sys.exit(1)
 
+# Take just the interesting properties.
+props=[]
+for index, interpreter in enumerate(config):
+    if interpreter["group"] == "spark" and interpreter["name"] == "dpl":
+        props=config[index]["properties"]
+
 # Patch interpreter.json if any
 if os.path.isfile(interpreter_file):
     try:
@@ -74,12 +80,12 @@ if os.path.isfile(interpreter_file):
         sys.exit(1)
     # Check if configs should be patched and flag for rewrite if we do
     rewrite = False
-    for key in config["properties"]:
+    for key in props:
         if key not in interpreter["interpreterSettings"]["spark"]["properties"]:
             print(f"Adding {key} to {interpreter_file}")
             rewrite = True
             # interpreter.json has different format
-            new_props = { "envName": cofnig["properties"][key]["envName"], "name": key, "value": config["properties"][key]["defaultValue"], "type": config["properties"][key]["type"], "description": config["properties"][key]["description"] }
+            new_props = { "envName": props[key]["envName"], "name": key, "value": props[key]["defaultValue"], "type": props[key]["type"], "description": props[key]["description"] }
             interpreter["interpreterSettings"]["spark"]["properties"][key] = new_props
     if rewrite:
         # We dont care about decimals
